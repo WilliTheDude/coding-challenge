@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { DataStreamsController } from './app.controller';
+import { DataStreamsService } from './app.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'WORKER_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          port: 3001,
+        },
+      },
+    ]),
+  ],
+  controllers: [DataStreamsController],
+  providers: [DataStreamsService],
 })
 export class AppModule {}
