@@ -3,14 +3,14 @@ import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class DataStreamsService {
+  intrevalId: number = 300000; // 5 min in ms
+
   constructor(@Inject('WORKER_SERVICE') private readonly client: ClientProxy) {}
 
-  // TODO: Consider if this should be a send for a requst-resposne type patteren
   start() {
-    return this.client.emit('start_service', {});
+    return this.client.emit('start_service', { interval: this.intrevalId });
   }
 
-  // TODO: The same as above
   stop() {
     return this.client.emit('stop_service', {});
   }
