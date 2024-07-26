@@ -44,6 +44,7 @@ export class WorkerService {
         'startDataFetching - WorkerService: Stoping the data fetching',
       );
       clearInterval(this.intervalId);
+      this.intervalId = null;
       return;
     }
 
