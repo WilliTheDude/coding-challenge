@@ -16,6 +16,12 @@ export class DataStreamsService {
   }
 
   fetchDataFromStorage() {
+    // TODO: Implement the functionality to fetch the data from the persistance storage
+    return;
+  }
+
+  persistData() {
+    // TODO: Implement the functionality to persist the data recived from worker microservice
     return;
   }
 }

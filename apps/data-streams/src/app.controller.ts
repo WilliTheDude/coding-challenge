@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Logger } from '@nestjs/common';
 import { DataStreamsService } from './app.service';
-import { ClientProxy } from '@nestjs/microservices';
+import { MessagePattern } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
 /**
@@ -19,17 +19,49 @@ import { Observable } from 'rxjs';
 
 @Controller()
 export class DataStreamsController {
-  constructor(private readonly appService: DataStreamsService) {}
+  private readonly logger: Logger;
+
+  constructor(private readonly appService: DataStreamsService) {
+    this.logger = new Logger(DataStreamsController.name);
+  }
 
   @Post('start')
   startWorker(): Observable<any> {
-    console.log('Recived the request to start worker');
     return this.appService.start();
   }
 
   @Post('stop')
   stopWorker(): Observable<any> {
-    console.log('reviced the request to stop the worker services');
     return this.appService.stop();
+  }
+
+  @Get()
+  getData() {
+    this.logger.log('getData - DataStreamsController: Fetching persisted data');
+    try {
+      this.appService.fetchDataFromStorage();
+      this.logger.log(
+        'getData - DataStreamsController: Successfully fetched persisted data',
+      );
+    } catch (e) {
+      this.logger.error(
+        'getData - DataStreamsController: An error occured while fetching the data',
+      );
+    }
+  }
+
+  @MessagePattern('new_data_fetched')
+  handleRecivedData() {
+    this.logger.log('handleData - DataStreamsController: Persiting new data');
+    try {
+      this.appService.persistData();
+      this.logger.log(
+        'handleData - DataStreamsController: Successfully persisted the data',
+      );
+    } catch (e) {
+      this.logger.error(
+        'handleData - DataStreamsController: An error occurred while persisting the data',
+      );
+    }
   }
 }
