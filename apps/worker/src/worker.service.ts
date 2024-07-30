@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AxiosError } from 'axios';
-import { emit } from 'process';
 import { firstValueFrom, catchError } from 'rxjs';
 
 @Injectable()
@@ -29,13 +28,18 @@ export class WorkerService {
       `startDataFetching - WorkerService: Start feching data, every ${intervalMs} miliseconds!`,
     );
 
+    // pre-fenchinge since the setInterval function will make its first call when time is up
+    this.client.emit(
+      'new_data_fetched',
+      this.dataTransformation(await this.fetchExternaleAPIData()),
+    );
     this.intervalId = setInterval(async () => {
-      const fetchedData = {};
-      console.log('Helloe from the repeated function');
-
-      //TODO: Implement some data transformation that should simulate the customres wish for the recived data.
-      this.client.emit('new_data_fetched', fetchedData);
-    }, 2000);
+      const fetchedData = await this.fetchExternaleAPIData();
+      this.client.emit(
+        'new_data_fetched',
+        this.dataTransformation(fetchedData),
+      );
+    }, intervalMs);
   }
 
   stopDataFetching() {
@@ -56,7 +60,7 @@ export class WorkerService {
 
   async fetchExternaleAPIData(): Promise<any> {
     const { data } = await firstValueFrom(
-      this.httpService.get('https://youtube.com').pipe(
+      this.httpService.get('https://api.nobelprize.org/2.1/nobelPrizes').pipe(
         catchError((error: AxiosError) => {
           this.logger.error(
             'fetchExternalAPIDATA - WorkerService: The following error occured: \n',
@@ -66,6 +70,10 @@ export class WorkerService {
         }),
       ),
     );
-    return;
+    return data;
+  }
+
+  dataTransformation(data: object): object {
+    return data;
   }
 }

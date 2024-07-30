@@ -1,21 +1,7 @@
-import { Controller, Get, Post, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Logger, Body } from '@nestjs/common';
 import { DataStreamsService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-
-/**
- * The serivce should communicate with the worker service and act like an entry point for that service too
- *
- * The Controller has the following endpoints:
- *
- * (Post) start: This endpoint will send a command to the Worker service telling it that it should start fetching data
- *    From the extrenal API, with a specified interval. In this case this will be every 5 minutes, but it will be a variable
- *    so it can be easily changed in the fucture if needed
- *
- * (Post) stop: This endpoint will send a command to the Worker service telling it that it should stop fetching data
- *
- * (Get) getData: This endpoint will retrive the stored data that this service has recived from the Worker service
- */
+import { NobelPrizesEntity } from './nobel/entities/nobel.entity';
 
 @Controller()
 export class DataStreamsController {
@@ -26,37 +12,38 @@ export class DataStreamsController {
   }
 
   @Post('start')
-  startWorker(): Observable<any> {
+  startWorker() {
     return this.appService.start();
   }
 
   @Post('stop')
-  stopWorker(): Observable<any> {
+  stopWorker() {
     return this.appService.stop();
   }
 
   @Get()
-  getData() {
-    this.logger.log('getData - DataStreamsController: Fetching persisted data');
+  async getData(): Promise<NobelPrizesEntity[]> {
     try {
-      this.appService.fetchDataFromStorage();
+      const res = await this.appService.fetchDataFromStorage();
       this.logger.log(
-        'getData - DataStreamsController: Successfully fetched persisted data',
+        'getData - DataStreamsController: Successfully fetched the data from persistance',
       );
+      this.logger.log(res);
+      return res;
     } catch (e) {
       this.logger.error(
         'getData - DataStreamsController: An error occured while fetching the data',
       );
+      return [];
     }
   }
 
   @MessagePattern('new_data_fetched')
-  handleRecivedData() {
-    this.logger.log('handleData - DataStreamsController: Persiting new data');
+  handleRecivedData(@Body() data) {
     try {
-      this.appService.persistData();
+      this.appService.persistData(data);
       this.logger.log(
-        'handleData - DataStreamsController: Successfully persisted the data',
+        'handleData - DataStreamsController: Sucessfully persisted data recived from worker.',
       );
     } catch (e) {
       this.logger.error(
