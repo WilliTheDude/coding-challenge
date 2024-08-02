@@ -25,7 +25,7 @@ import { NobelModule } from './nobel/nobel.module';
       password: 'admin',
       database: 'dwhCodingInterview',
       entities: [NobelPrizesEntity],
-      synchronize: true, // Set to false before final push to make it production friendly
+      synchronize: true,
       logging: true,
       dropSchema: true,
     }),

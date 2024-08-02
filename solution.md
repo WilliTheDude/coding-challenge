@@ -33,13 +33,15 @@ The module is imported in the app.module.ts file to be used in the Data-Streams 
 
 2. When you have created the database, the next step is to open up two new windows in your favorite terminal. First, navigate to the root folder of the project, in both windows, then in one of the windows run the command `yarn`.
 
-3. When yarn is done running, start the **_data-streams service_** in one of the two windows by running `yarn start`, and the worker class in the other window by running the command `yarn start worker`
+3. After `yarn` is done running then run `yarn upgrade` to ensure that you have the latests version of the packages in your project.
 
-4. To issue the worker class to start open a third terminal window and run `curl -X POST http://localhost:3000/start`
+4. When yarn is done running, start the **_data-streams service_** in one of the two windows by running `yarn start`, and the worker class in the other window by running the command `yarn start worker`
 
-5. To retrieve the data that has been persisted by the data-streams service run the following: `curl -X GET http://localhost:3000`.
+5. To issue the worker class to start open a third terminal window and run `curl -X POST http://localhost:3000/start`
 
-6. To finally stop the worker class from fetching data run the following `curl -X POST http://localhost:3000/stop`
+6. To retrieve the data that has been persisted by the data-streams service run the following: `curl -X GET http://localhost:3000`.
+
+7. To finally stop the worker class from fetching data run the following `curl -X POST http://localhost:3000/stop`
 
 # Short-comings and future work
 ## Future work
@@ -50,6 +52,8 @@ The module is imported in the app.module.ts file to be used in the Data-Streams 
 - Better handling of timeouts and retries. Right now the HttpModule is configured in the imports of the worker.module.ts module and is set to timeout a request after 5000 ms. Here there can be done some Improvements by using the nestjs-axios-retrue and Axios-return packages, instead of throwing an error if a request timeout happens. 
 
 - For the configuration of the TypeOrmModule in the app.module.ts module, the synchronize option shouldn't be set to true in production to prevent data loss, performance issues, and lack of control. Instead, it would be wise to implement migrations, which gives more control when making changes to the database.
+
+- For the configuration of the TypeOrmModule in the app.module.ts module, the dropSchema option shouldn't be set to true in production, here i should implement migrations to handle the sync of the different tables and entities in the appplaciton.
 
 - Implement some e2e-tests (Integration Tests) for the 2 Microservices and Nobel Module to see how they function together and not just their isolated functionality.
 
