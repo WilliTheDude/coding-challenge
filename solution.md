@@ -51,5 +51,11 @@ The module is imported in the app.module.ts file to be used in the Data-Streams 
 
 - For the configuration of the TypeOrmModule in the app.module.ts module, the synchronize option shouldn't be set to true in production to prevent data loss, performance issues, and lack of control. Instead, it would be wise to implement migrations, which gives more control when making changes to the database.
 
+- Implement some e2e-tests (Integration Tests) for the 2 Microservices and Nobel Module to see how they function together and not just their isolated functionality.
+
 ## shortcomings
 - I think I could have chosen another API that would contain some more dynamic data, which would allow for a more interesting, transformation of the data being fetched. However, I chose the Nobel prize API, which returns static data, to avoid API keys that should be stored or OAuths, where I needed to handle the storage of credentials.
+
+- Missing Unit test for the Worker Service and Controller classes
+
+- Missing Unit test for the nobel Service and Controller classes
